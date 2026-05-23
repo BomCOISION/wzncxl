@@ -32,6 +32,7 @@ class TemplateMatchResult:
 @dataclass
 class MultiTemplateWaitState:
     deadline: float
+    round_index: int = 0
     hit_count: int = 0
     best_pass_count: int = 0
     best_scores: dict[str, float] = field(default_factory=dict)
@@ -41,15 +42,42 @@ def wait_for_stable_templates(serial: str, page_name: str, config: MultiTemplate
     templates = load_templates(config.template_paths)
     client = create_adb_client(serial)
     state = create_multi_wait_state(config.timeout_seconds)
+    log_template_wait_start(serial, page_name, config)
     while monotonic() < state.deadline:
         if detect_templates_once(client, page_name, templates, config, state):
             return
     raise_multi_timeout_error(serial, page_name, state)
 
 
-def detect_templates_once(client: ADBClient, page_name: str, templates: dict[str, np.ndarray], config: MultiTemplateWaitConfig, state: MultiTemplateWaitState) -> bool:
-    result = get_template_result(client, templates, config)
+def detect_templates_once_only(serial: str, page_name: str, config: MultiTemplateWaitConfig) -> bool:
+    templates = load_templates(config.template_paths)
+    client = create_adb_client(serial)
+    state = MultiTemplateWaitState(deadline=monotonic())
+    return detect_templates_without_wait(client, page_name, templates, config, state)
+
+
+def detect_templates_without_wait(client: ADBClient, page_name: str, templates: dict[str, np.ndarray], config: MultiTemplateWaitConfig, state: MultiTemplateWaitState) -> bool:
+    state.round_index += 1
+    result = try_get_template_result(client, page_name, templates, config, state)
+    if result is None:
+        return False
+    return is_template_result_passed(client, page_name, config, state, result)
+
+
+def is_template_result_passed(client: ADBClient, page_name: str, config: MultiTemplateWaitConfig, state: MultiTemplateWaitState, result: TemplateMatchResult) -> bool:
     update_multi_state(state, result, config.required_matches)
+    log_multi_match_round(client.device_serial, page_name, state, result, config)
+    return result.pass_count >= config.required_matches
+
+
+def detect_templates_once(client: ADBClient, page_name: str, templates: dict[str, np.ndarray], config: MultiTemplateWaitConfig, state: MultiTemplateWaitState) -> bool:
+    state.round_index += 1
+    result = try_get_template_result(client, page_name, templates, config, state)
+    if result is None:
+        sleep(config.interval_seconds)
+        return False
+    update_multi_state(state, result, config.required_matches)
+    log_multi_match_round(client.device_serial, page_name, state, result, config)
     if state.hit_count >= config.stable_hits:
         log_multi_match_success(client.device_serial, page_name, result)
         return True
@@ -60,6 +88,14 @@ def detect_templates_once(client: ADBClient, page_name: str, templates: dict[str
 def get_template_result(client: ADBClient, templates: dict[str, np.ndarray], config: MultiTemplateWaitConfig) -> TemplateMatchResult:
     scores = score_templates(client.median_frame(config.frame_count), templates)
     return TemplateMatchResult(scores=scores, pass_count=count_passed(scores, config.threshold))
+
+
+def try_get_template_result(client: ADBClient, page_name: str, templates: dict[str, np.ndarray], config: MultiTemplateWaitConfig, state: MultiTemplateWaitState) -> TemplateMatchResult | None:
+    try:
+        return get_template_result(client, templates, config)
+    except Exception as exc:
+        log_template_round_failed(client.device_serial, page_name, state, exc)
+        return None
 
 
 def score_templates(frame: np.ndarray, templates: dict[str, np.ndarray]) -> dict[str, float]:
@@ -131,6 +167,18 @@ def check_template_size(frame: np.ndarray, template: np.ndarray) -> None:
 
 def log_multi_match_success(serial: str, page_name: str, result: TemplateMatchResult) -> None:
     log_info(f"[{serial}] {page_name} 已稳定命中，{result.pass_count} 个模板达标，分数: {format_scores(result.scores)}")
+
+
+def log_template_wait_start(serial: str, page_name: str, config: MultiTemplateWaitConfig) -> None:
+    log_info(f"[{serial}] 开始识别{page_name}: {config.frame_count} 帧中位图，连续 {config.stable_hits} 次命中，超时 {config.timeout_seconds} 秒")
+
+
+def log_multi_match_round(serial: str, page_name: str, state: MultiTemplateWaitState, result: TemplateMatchResult, config: MultiTemplateWaitConfig) -> None:
+    log_info(f"[{serial}] {page_name} 第 {state.round_index} 轮，{result.pass_count}/{config.required_matches} 达标，连续 {state.hit_count}/{config.stable_hits}，分数: {format_scores(result.scores)}")
+
+
+def log_template_round_failed(serial: str, page_name: str, state: MultiTemplateWaitState, exc: Exception) -> None:
+    log_info(f"[{serial}] {page_name} 第 {state.round_index} 轮截图或匹配失败，继续等待: {exc}")
 
 
 def format_scores(scores: dict[str, float]) -> str:

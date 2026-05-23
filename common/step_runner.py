@@ -6,15 +6,22 @@ from time import perf_counter
 from common.log_utils import log_error, log_info
 
 
+class StepFailedError(RuntimeError):
+    def __init__(self, step_name: str, error: Exception) -> None:
+        super().__init__(str(error))
+        self.step_name = step_name
+        self.error = error
+
+
 def run_step(step_name: str, step_func: Callable[[], None]) -> None:
     """执行步骤并记录耗时"""
     start_time = perf_counter()
     log_info(f"{step_name} 开始")
     try:
         step_func()
-    except Exception:
+    except Exception as exc:
         log_step_failed(step_name, start_time)
-        raise
+        raise StepFailedError(step_name, exc) from exc
     log_step_finished(step_name, start_time)
 
 
