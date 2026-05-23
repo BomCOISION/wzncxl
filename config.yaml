@@ -1,0 +1,53 @@
+# ADB 可执行文件路径
+adb_path: "C:\\AAAUSER\\WorkRelated\\Leidian\\Install\\leidian\\LDPlayer14\\adb.exe"
+
+# 目标设备序列号
+device_serial: "emulator-5554"
+
+# 模拟器分辨率
+resolution: [1080, 1920]
+
+# 王者荣耀 Android 包名
+king_package: "com.tencent.tmgp.sgame"
+
+# 王者荣耀启动 Activity，留空时按包名启动
+king_activity: ""
+
+# 启动后等待游戏进程出现的秒数
+startup_wait_seconds: 15
+
+# ADB 命令超时时间
+adb_command_timeout_seconds: 30
+
+# 步骤重试次数
+retry_times: 1
+
+# 登录页固定图标内部模板路径，模板必须小于等于图标或按钮本体内部区域
+login_page_templates: ["resources/templates/login_exit_button_core.png", "resources/templates/login_start_button_core.png", "resources/templates/login_upload_log_icon_core.png"]
+
+# 登录页模板至少达标数量
+login_page_required_matches: 2
+
+# 每次识别连续截图帧数
+screenshot_median_frame_count: 5
+
+# 模板匹配通过阈值
+template_match_threshold: 0.82
+
+# 连续稳定命中次数
+template_stable_hits: 3
+
+# 等待登录界面超时时间
+game_load_timeout_seconds: 90
+
+# 每轮页面识别间隔时间
+template_match_interval_seconds: 0.8
+
+# 登录页右上角退出按钮点击坐标
+login_exit_button_point: [1833, 43]
+
+# 协议弹窗同意按钮点击坐标
+agreement_agree_button_point: [1147, 819]
+
+# 点击协议同意按钮前等待秒数
+agreement_agree_wait_seconds: 0.2
