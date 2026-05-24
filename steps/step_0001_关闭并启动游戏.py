@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from config import ADB_PATH, KING_ACTIVITY, KING_PACKAGE, STARTUP_WAIT_SECONDS, TARGET_DEVICES
+from config import ADB_PATH, KING_ACTIVITY, KING_PACKAGE, STARTUP_WAIT_SECONDS
 from common.log_utils import log_info
 from common.process_utils import close_package, get_package_pids, resolve_launch_activity, start_activity
 from common.run_context import get_context_devices
@@ -15,10 +15,8 @@ def run() -> None:
 
 def check_config() -> None:
     """检查基础配置"""
-    if not ADB_PATH.exists():
+    if str(ADB_PATH) != "adb" and not ADB_PATH.exists():
         raise FileNotFoundError(f"ADB 不存在: {ADB_PATH}")
-    if not TARGET_DEVICES:
-        raise ValueError("TARGET_DEVICES 不能为空")
 
 
 def restart_game_on_devices(devices: list[str]) -> None:

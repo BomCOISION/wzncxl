@@ -22,6 +22,9 @@ adb_command_timeout_seconds: 30
 # 步骤重试次数
 retry_times: 1
 
+# 主流程失败后最多自动重启次数
+main_restart_max_times: 1000
+
 # 登录页固定图标内部模板路径，模板必须小于等于图标或按钮本体内部区域
 login_page_templates: ["resources/templates/login_exit_button_core.png", "resources/templates/login_start_button_core.png", "resources/templates/login_upload_log_icon_core.png"]
 
@@ -128,13 +131,13 @@ server_select_index: 1
 server_select_point_offset: [220, 0]
 
 # 点击区服前等待秒数
-server_select_wait_seconds: 1
+server_select_wait_seconds: 3
 
 # 开始游戏按钮点击坐标
 start_game_button_point: [956, 839]
 
 # 点击开始游戏按钮前等待秒数
-start_game_button_wait_seconds: 5
+start_game_button_wait_seconds: 8
 
 # 弹窗关闭 X 模板路径
 popup_close_x_template: "resources/templates/popup_close_x_core.png"
@@ -206,10 +209,10 @@ one_click_farm_button_point: [1284, 631]
 one_click_farm_button_wait_seconds: 1
 
 # 收获页面出现前等待秒数
-harvest_page_wait_seconds: 3
+harvest_page_wait_seconds: 7
 
-# 收获页面随机点击屏幕中间区域，格式为 x, y, 宽, 高
-harvest_random_tap_region: [760, 390, 400, 300]
+# 收获页面点击继续文本坐标
+harvest_continue_text_point: [1260, 964]
 
 # 农场左上角返回按钮点击坐标
 farm_back_button_point: [108, 57]

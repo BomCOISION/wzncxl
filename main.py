@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from config import MAIN_RESTART_MAX_TIMES
 from time import perf_counter
 
 from common.failure_utils import save_failure_screenshot
@@ -110,13 +111,36 @@ def try_save_failure_screenshot() -> str:
         return f"保存失败: {exc}"
 
 
-if __name__ == "__main__":
+def run_main_with_restart() -> None:
+    for attempt in range(1, MAIN_RESTART_MAX_TIMES + 1):
+        if run_main_once(attempt):
+            return
+    log_error(f"主流程连续失败 {MAIN_RESTART_MAX_TIMES} 次，停止自动重启")
+
+
+def run_main_once(attempt: int) -> bool:
     start = perf_counter()
     try:
+        log_info(f"主流程第 {attempt}/{MAIN_RESTART_MAX_TIMES} 次运行")
         main(start)
+        return True
     except StepFailedError as exc:
-        log_total_time("主流程失败", start)
-        log_step_stop(exc)
+        handle_step_failed(start, exc)
+        return False
     except Exception as exc:
-        log_total_time("主流程失败", start)
-        log_error(f"主流程执行失败: {exc}")
+        handle_main_failed(start, exc)
+        return False
+
+
+def handle_step_failed(start: float, exc: StepFailedError) -> None:
+    log_total_time("主流程失败", start)
+    log_step_stop(exc)
+
+
+def handle_main_failed(start: float, exc: Exception) -> None:
+    log_total_time("主流程失败", start)
+    log_error(f"主流程执行失败: {exc}")
+
+
+if __name__ == "__main__":
+    run_main_with_restart()

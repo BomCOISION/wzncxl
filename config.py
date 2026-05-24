@@ -83,6 +83,9 @@ ADB_COMMAND_TIMEOUT_SECONDS = float(get_config_value("adb_command_timeout_second
 # 步骤重试次数。
 RETRY_TIMES = int(get_config_value("retry_times", 1))
 
+# 主流程失败后最多自动重启次数。
+MAIN_RESTART_MAX_TIMES = int(get_config_value("main_restart_max_times", 100))
+
 # 登录页固定图标内部模板路径列表。
 LOGIN_PAGE_TEMPLATE_PATHS = [
     resolve_project_path(path)
@@ -312,8 +315,8 @@ ONE_CLICK_FARM_BUTTON_WAIT_SECONDS = float(get_config_value("one_click_farm_butt
 # 收获页面出现前等待秒数。
 HARVEST_PAGE_WAIT_SECONDS = float(get_config_value("harvest_page_wait_seconds", 5))
 
-# 收获页面随机点击屏幕中间区域，格式为 x, y, 宽, 高。
-HARVEST_RANDOM_TAP_REGION = tuple(get_config_value("harvest_random_tap_region", [760, 390, 400, 300]))
+# 收获页面点击继续文本坐标。
+HARVEST_CONTINUE_TEXT_POINT = tuple(get_config_value("harvest_continue_text_point", [960, 964]))
 
 # 农场左上角返回按钮点击坐标。
 FARM_BACK_BUTTON_POINT = tuple(get_config_value("farm_back_button_point", [108, 57]))
