@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from random import choice
+import atexit
 from subprocess import CompletedProcess
 
-from config import ADB_PATH, TARGET_DEVICES
+from config import ADB_PATH, TARGET_DEVICE_LIST_CONFIGURED, TARGET_DEVICES
 from common.adb_client import run_adb_process
+from common.device_lock import acquire_device_lock, release_device_lock
 from common.log_utils import log_info
 
 _CONTEXT_DEVICES: list[str] | None = None
+_CONTEXT_RELEASE_REGISTERED = False
 
 
 def get_context_device() -> str:
@@ -19,15 +21,28 @@ def get_context_devices() -> list[str]:
     global _CONTEXT_DEVICES
     if _CONTEXT_DEVICES is None:
         _CONTEXT_DEVICES = resolve_context_devices()
+        register_context_release()
     return list(_CONTEXT_DEVICES)
 
 
 def resolve_context_devices() -> list[str]:
     online_devices = list_online_devices()
+    serial = acquire_device_lock(get_candidate_devices(online_devices))
+    log_info(f"[{serial}] 已占用设备")
+    return [serial]
+
+
+def get_candidate_devices(online_devices: list[str]) -> list[str]:
     configured_devices = get_online_configured_devices(online_devices)
-    if configured_devices:
+    if TARGET_DEVICE_LIST_CONFIGURED:
         return configured_devices
-    return [choose_random_online_device(online_devices)]
+    return append_online_fallback(configured_devices, online_devices)
+
+
+def append_online_fallback(configured_devices: list[str], online_devices: list[str]) -> list[str]:
+    if configured_devices:
+        return configured_devices + [serial for serial in online_devices if serial not in configured_devices]
+    return online_devices
 
 
 def get_online_configured_devices(online_devices: list[str]) -> list[str]:
@@ -35,12 +50,20 @@ def get_online_configured_devices(online_devices: list[str]) -> list[str]:
     return [serial for serial in TARGET_DEVICES if serial in online_set]
 
 
-def choose_random_online_device(online_devices: list[str]) -> str:
-    if not online_devices:
-        raise ValueError("没有找到在线 ADB 设备")
-    serial = choice(online_devices)
-    log_info(f"[{serial}] 配置设备不可用，随机选择在线设备")
-    return serial
+def release_context_devices() -> None:
+    global _CONTEXT_DEVICES
+    for serial in _CONTEXT_DEVICES or []:
+        release_device_lock(serial)
+        log_info(f"[{serial}] 已释放设备占用")
+    _CONTEXT_DEVICES = None
+
+
+def register_context_release() -> None:
+    global _CONTEXT_RELEASE_REGISTERED
+    if _CONTEXT_RELEASE_REGISTERED:
+        return
+    atexit.register(release_context_devices)
+    _CONTEXT_RELEASE_REGISTERED = True
 
 
 def list_online_devices() -> list[str]:

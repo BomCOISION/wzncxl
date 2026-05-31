@@ -21,6 +21,7 @@ class MultiTemplateWaitConfig:
     threshold: float
     stable_hits: int
     interval_seconds: float
+    template_regions: dict[str, tuple] = field(default_factory=dict)
 
 
 @dataclass
@@ -86,7 +87,7 @@ def detect_templates_once(client: ADBClient, page_name: str, templates: dict[str
 
 
 def get_template_result(client: ADBClient, templates: dict[str, np.ndarray], config: MultiTemplateWaitConfig) -> TemplateMatchResult:
-    scores = score_templates(client.median_frame(config.frame_count), templates)
+    scores = score_templates_in_regions(client.median_frame(config.frame_count), templates, config.template_regions)
     return TemplateMatchResult(scores=scores, pass_count=count_passed(scores, config.threshold))
 
 
@@ -99,7 +100,28 @@ def try_get_template_result(client: ADBClient, page_name: str, templates: dict[s
 
 
 def score_templates(frame: np.ndarray, templates: dict[str, np.ndarray]) -> dict[str, float]:
-    return {name: match_template(frame, template) for name, template in templates.items()}
+    return score_templates_in_regions(frame, templates, {})
+
+
+def score_templates_in_regions(frame: np.ndarray, templates: dict[str, np.ndarray], regions: dict[str, tuple]) -> dict[str, float]:
+    return {name: match_template(get_template_frame(frame, name, regions), template) for name, template in templates.items()}
+
+
+def get_template_frame(frame: np.ndarray, name: str, regions: dict[str, tuple]) -> np.ndarray:
+    region = regions.get(name)
+    return frame if region is None else crop_region(frame, region)
+
+
+def crop_region(frame: np.ndarray, region: tuple) -> np.ndarray:
+    x, y, width, height = get_region_values(region)
+    return frame[y:y + height, x:x + width]
+
+
+def get_region_values(region: tuple) -> tuple[int, int, int, int]:
+    if len(region) != 4:
+        raise ValueError("模板匹配区域必须配置为 [x, y, 宽, 高]")
+    x, y, width, height = region
+    return int(x), int(y), int(width), int(height)
 
 
 def count_passed(scores: dict[str, float], threshold: float) -> int:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from config import (
     ADB_PATH,
     POPUP_CLOSE_WAIT_SECONDS,
+    POPUP_CLOSE_X_MATCH_REGION,
     POPUP_CLOSE_X_MATCH_THRESHOLD,
     POPUP_CLOSE_X_TEMPLATE_PATH,
     SCREENSHOT_MEDIAN_FRAME_COUNT,
@@ -38,4 +39,9 @@ def close_popup(serial: str) -> bool:
 
 def find_popup_close_point(serial: str) -> tuple[int, int] | None:
     frame = ADBClient(str(ADB_PATH), serial).median_frame(SCREENSHOT_MEDIAN_FRAME_COUNT)
-    return find_template_center(frame, POPUP_CLOSE_X_TEMPLATE_PATH, POPUP_CLOSE_X_MATCH_THRESHOLD)
+    return find_template_center(
+        frame,
+        POPUP_CLOSE_X_TEMPLATE_PATH,
+        POPUP_CLOSE_X_MATCH_THRESHOLD,
+        POPUP_CLOSE_X_MATCH_REGION,
+    )

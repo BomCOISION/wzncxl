@@ -68,6 +68,14 @@ ADB_PATH = Path(str(get_config_value("adb_path", "adb")))
 # 目标设备序列号列表。
 TARGET_DEVICES = get_target_devices()
 
+# 是否显式配置多设备列表。
+TARGET_DEVICE_LIST_CONFIGURED = get_config_value("target_devices", None) is not None
+
+# 当前被脚本占用的设备记录文件。
+DEVICE_LOCK_STATE_PATH = resolve_project_path(
+    get_config_value("device_lock_state_path", "C:\\Users\\18099\\Desktop\\Items\\device_locks.json")
+)
+
 # 王者荣耀 Android 包名。
 KING_PACKAGE = str(get_config_value("king_package", "com.tencent.tmgp.sgame"))
 
@@ -86,6 +94,12 @@ RETRY_TIMES = int(get_config_value("retry_times", 1))
 # 主流程失败后最多自动重启次数。
 MAIN_RESTART_MAX_TIMES = int(get_config_value("main_restart_max_times", 100))
 
+# 启用的扩展流程列表；为空时不执行任何扩展。
+ENABLED_EXTENSIONS = [str(name) for name in get_config_value("enabled_extensions", [])]
+
+# 每次执行扩展前等待秒数。
+EXTENSION_BEFORE_RUN_WAIT_SECONDS = float(get_config_value("extension_before_run_wait_seconds", 1))
+
 # 登录页固定图标内部模板路径列表。
 LOGIN_PAGE_TEMPLATE_PATHS = [
     resolve_project_path(path)
@@ -95,6 +109,16 @@ LOGIN_PAGE_TEMPLATE_PATHS = [
         "resources/templates/login_upload_log_icon_core.png",
     ])
 ]
+
+# 登录页模板匹配区域映射，格式为 模板文件名: [x, y, 宽, 高]。
+LOGIN_PAGE_TEMPLATE_REGIONS = {
+    str(name): tuple(region)
+    for name, region in get_config_value("login_page_template_regions", {
+        "login_exit_button_core": [1760, 0, 150, 110],
+        "login_start_button_core": [780, 740, 360, 160],
+        "login_upload_log_icon_core": [1780, 500, 120, 140],
+    }).items()
+}
 
 # 登录页模板至少达标数量。
 LOGIN_PAGE_REQUIRED_MATCHES = int(get_config_value("login_page_required_matches", 2))
@@ -116,6 +140,9 @@ TEMPLATE_MATCH_INTERVAL_SECONDS = float(get_config_value("template_match_interva
 
 # 登录页右上角退出按钮点击坐标。
 LOGIN_EXIT_BUTTON_POINT = tuple(get_config_value("login_exit_button_point", [1833, 43]))
+
+# 登录页公告弹窗右上角关闭按钮点击坐标。
+LOGIN_NOTICE_CLOSE_BUTTON_POINT = tuple(get_config_value("login_notice_close_button_point", [1633, 148]))
 
 # 协议弹窗同意按钮点击坐标。
 AGREEMENT_AGREE_BUTTON_POINT = tuple(get_config_value("agreement_agree_button_point", [1147, 819]))
@@ -229,6 +256,9 @@ POPUP_CLOSE_X_TEMPLATE_PATH = resolve_project_path(
 # 弹窗关闭 X 模板匹配阈值。
 POPUP_CLOSE_X_MATCH_THRESHOLD = float(get_config_value("popup_close_x_match_threshold", 0.82))
 
+# 弹窗关闭 X 模板匹配区域，格式为 x, y, 宽, 高。
+POPUP_CLOSE_X_MATCH_REGION = tuple(get_config_value("popup_close_x_match_region", [1450, 40, 460, 220]))
+
 # 识别弹窗关闭按钮前等待秒数。
 POPUP_CLOSE_WAIT_SECONDS = float(get_config_value("popup_close_wait_seconds", 0.1))
 
@@ -243,6 +273,18 @@ LOBBY_CLEAN_TEMPLATE_PATHS = [
         "resources/templates/lobby_battle_text_core.png",
     ])
 ]
+
+# 干净大厅模板匹配区域映射，格式为 模板文件名: [x, y, 宽, 高]。
+LOBBY_CLEAN_TEMPLATE_REGIONS = {
+    str(name): tuple(region)
+    for name, region in get_config_value("lobby_clean_template_regions", {
+        "lobby_settings_icon_core": [1690, 20, 150, 110],
+        "lobby_mail_icon_core": [1600, 25, 130, 100],
+        "lobby_bag_icon_core": [1430, 950, 150, 100],
+        "lobby_rank_text_core": [1030, 740, 260, 150],
+        "lobby_battle_text_core": [630, 740, 260, 150],
+    }).items()
+}
 
 # 干净大厅模板至少达标数量。
 LOBBY_CLEAN_REQUIRED_MATCHES = int(get_config_value("lobby_clean_required_matches", 3))
@@ -260,6 +302,9 @@ ACTIVITY_BACK_BUTTON_TEMPLATE_PATH = resolve_project_path(
 
 # 活动页返回按钮模板匹配阈值。
 ACTIVITY_BACK_BUTTON_MATCH_THRESHOLD = float(get_config_value("activity_back_button_match_threshold", 0.82))
+
+# 活动页返回按钮模板匹配区域，格式为 x, y, 宽, 高。
+ACTIVITY_BACK_BUTTON_MATCH_REGION = tuple(get_config_value("activity_back_button_match_region", [0, 0, 260, 150]))
 
 # 识别活动页返回按钮前等待秒数。
 ACTIVITY_BACK_BUTTON_WAIT_SECONDS = float(get_config_value("activity_back_button_wait_seconds", 0.1))
@@ -288,6 +333,18 @@ FARM_LOADED_TEMPLATE_PATHS = [
     ])
 ]
 
+# 农场加载完成模板匹配区域映射，格式为 模板文件名: [x, y, 宽, 高]。
+FARM_LOADED_TEMPLATE_REGIONS = {
+    str(name): tuple(region)
+    for name, region in get_config_value("farm_loaded_template_regions", {
+        "farm_rank_5v5_icon_core": [1560, 20, 310, 100],
+        "farm_warehouse_icon_core": [1780, 160, 120, 120],
+        "farm_social_icon_core": [1780, 260, 120, 130],
+        "farm_action_icon_core": [1300, 800, 180, 150],
+        "farm_duo_action_icon_core": [1280, 570, 220, 180],
+    }).items()
+}
+
 # 农场加载完成模板至少达标数量。
 FARM_LOADED_REQUIRED_MATCHES = int(get_config_value("farm_loaded_required_matches", 3))
 
@@ -296,6 +353,200 @@ FARM_LOADED_TIMEOUT_SECONDS = float(get_config_value("farm_loaded_timeout_second
 
 # 农场加载完成连续稳定命中次数。
 FARM_LOADED_STABLE_HITS = int(get_config_value("farm_loaded_stable_hits", 2))
+
+# 农场升级箭头内部模板路径。
+FARM_UPGRADE_ARROW_TEMPLATE_PATH = resolve_project_path(
+    get_config_value("farm_upgrade_arrow_template", "resources/templates/farm_upgrade_arrow_core.png")
+)
+
+# 农场升级箭头模板匹配区域，格式为 x, y, 宽, 高。
+FARM_UPGRADE_ARROW_MATCH_REGION = tuple(
+    get_config_value("farm_upgrade_arrow_match_region", [300, 45, 280, 80])
+)
+
+# 农场升级箭头模板匹配阈值。
+FARM_UPGRADE_ARROW_MATCH_THRESHOLD = float(get_config_value("farm_upgrade_arrow_match_threshold", 0.95))
+
+# 农场升级判断时保存的当前截图路径。
+FARM_UPGRADE_SCAN_SCREENSHOT_PATH = resolve_project_path(
+    get_config_value("farm_upgrade_scan_screenshot_path", "logs/farm_upgrade_scan_screen.png")
+)
+
+# 农场升级判断结果保存路径。
+FARM_UPGRADE_RESULT_PATH = resolve_project_path(
+    get_config_value("farm_upgrade_result_path", "logs/farm_upgrade_result.json")
+)
+
+# 农场升级箭头固定点击坐标。
+FARM_UPGRADE_ARROW_CLICK_POINT = tuple(get_config_value("farm_upgrade_arrow_click_point", [448, 75]))
+
+# 点击升级箭头后等待升级界面出现的秒数。
+FARM_UPGRADE_AFTER_ARROW_WAIT_SECONDS = float(get_config_value("farm_upgrade_after_arrow_wait_seconds", 1))
+
+# 农场升级界面右下角升级按钮固定点击坐标。
+FARM_UPGRADE_BUTTON_POINT = tuple(get_config_value("farm_upgrade_button_point", [1553, 981]))
+
+# 首次点击升级按钮后继续重复点击升级按钮次数。
+FARM_UPGRADE_REPEAT_CLICK_TIMES = int(get_config_value("farm_upgrade_repeat_click_times", 6))
+
+# 每次重复点击升级按钮前等待秒数。
+FARM_UPGRADE_REPEAT_CLICK_WAIT_SECONDS = float(
+    get_config_value("farm_upgrade_repeat_click_wait_seconds", 2)
+)
+
+# 农场升级界面左上角返回按钮固定点击坐标。
+FARM_UPGRADE_BACK_BUTTON_POINT = tuple(get_config_value("farm_upgrade_back_button_point", [100, 63]))
+
+# 仓库按钮固定点击坐标。
+SELL_WAREHOUSE_BUTTON_POINT = tuple(get_config_value("sell_warehouse_button_point", [1832, 220]))
+
+# 点击仓库按钮后等待秒数。
+SELL_WAREHOUSE_AFTER_OPEN_WAIT_SECONDS = float(
+    get_config_value("sell_warehouse_after_open_wait_seconds", 1)
+)
+
+# 仓库界面批量出售按钮固定点击坐标。
+SELL_WAREHOUSE_BATCH_SELL_BUTTON_POINT = tuple(
+    get_config_value("sell_warehouse_batch_sell_button_point", [1388, 972])
+)
+
+# 点击批量出售按钮后等待秒数。
+SELL_WAREHOUSE_AFTER_BATCH_SELL_WAIT_SECONDS = float(
+    get_config_value("sell_warehouse_after_batch_sell_wait_seconds", 1)
+)
+
+# 批量出售界面选择全部选项框固定点击坐标。
+SELL_WAREHOUSE_SELECT_ALL_POINT = tuple(get_config_value("sell_warehouse_select_all_point", [1048, 892]))
+
+# 点击选择全部后等待秒数。
+SELL_WAREHOUSE_AFTER_SELECT_ALL_WAIT_SECONDS = float(
+    get_config_value("sell_warehouse_after_select_all_wait_seconds", 1)
+)
+
+# 批量出售界面出售按钮固定点击坐标。
+SELL_WAREHOUSE_CONFIRM_SELL_BUTTON_POINT = tuple(
+    get_config_value("sell_warehouse_confirm_sell_button_point", [1532, 971])
+)
+
+# 首次点击出售按钮后再次点击前等待秒数。
+SELL_WAREHOUSE_AFTER_SELL_WAIT_SECONDS = float(get_config_value("sell_warehouse_after_sell_wait_seconds", 1))
+
+# 第二次点击出售按钮后关闭仓库前等待秒数。
+SELL_WAREHOUSE_AFTER_SECOND_SELL_WAIT_SECONDS = float(
+    get_config_value("sell_warehouse_after_second_sell_wait_seconds", 1)
+)
+
+# 仓库界面右上角关闭按钮固定点击坐标。
+SELL_WAREHOUSE_CLOSE_BUTTON_POINT = tuple(get_config_value("sell_warehouse_close_button_point", [1778, 94]))
+
+# 删除当前种植作物前等待秒数。
+CHANGE_CROP_DELETE_WAIT_SECONDS = float(get_config_value("change_crop_delete_wait_seconds", 1))
+
+# 当前界面右下角种植按钮 X 键点击坐标。
+CHANGE_CROP_DELETE_X_BUTTON_POINT = tuple(get_config_value("change_crop_delete_x_button_point", [0, 0]))
+
+# 删除当前种植作物后、点击种植按钮前等待秒数。
+CHANGE_CROP_PLANT_WAIT_SECONDS = float(get_config_value("change_crop_plant_wait_seconds", 1))
+
+# 当前界面右下角种植按钮点击坐标。
+CHANGE_CROP_PLANT_BUTTON_POINT = tuple(get_config_value("change_crop_plant_button_point", [0, 0]))
+
+# 打开作物列表后固定点击的第一个农作物坐标。
+CHANGE_CROP_FIRST_CROP_POINT = tuple(get_config_value("change_crop_first_crop_point", [0, 0]))
+
+# 点击第一个农作物后等待识别目标作物的秒数。
+CHANGE_CROP_AFTER_FIRST_CROP_WAIT_SECONDS = float(
+    get_config_value("change_crop_after_first_crop_wait_seconds", 1)
+)
+
+# 点击目标作物后、点击选择按钮前等待秒数。
+CHANGE_CROP_AFTER_TARGET_CROP_WAIT_SECONDS = float(
+    get_config_value("change_crop_after_target_crop_wait_seconds", 1)
+)
+
+# 作物列表选择按钮点击坐标。
+CHANGE_CROP_SELECT_BUTTON_POINT = tuple(get_config_value("change_crop_select_button_point", [0, 0]))
+
+# 作物列表识别时保存的当前截图路径。
+CROP_LIST_SCAN_SCREENSHOT_PATH = resolve_project_path(
+    get_config_value("crop_list_scan_screenshot_path", "logs/crop_list_scan_screen.png")
+)
+
+# 作物列表识别结果保存路径。
+CROP_LIST_RESULT_PATH = resolve_project_path(
+    get_config_value("crop_list_result_path", "logs/crop_list_scan_result.json")
+)
+
+# 作物列表时间文字模板匹配区域，格式为 x, y, 宽, 高。
+CROP_LIST_MATCH_REGION = tuple(get_config_value("crop_list_match_region", [1000, 140, 700, 740]))
+
+# 作物列表时间文字模板匹配阈值。
+CROP_LIST_MATCH_THRESHOLD = float(get_config_value("crop_list_match_threshold", 0.8))
+
+# 作物列表时间文字模板匹配去重横向距离。
+CROP_LIST_MATCH_DEDUP_X = int(get_config_value("crop_list_match_dedup_x", 20))
+
+# 作物列表时间文字模板匹配去重纵向距离。
+CROP_LIST_MATCH_DEDUP_Y = int(get_config_value("crop_list_match_dedup_y", 10))
+
+# 作物列表时间文字模板匹配结果图路径。
+CROP_LIST_MATCH_RESULT_IMAGE_PATH = resolve_project_path(
+    get_config_value("crop_list_match_result_image_path", "logs/crop_list_match_result.png")
+)
+
+# 用来选择目标作物的成熟时间。
+CROP_LIST_TARGET_CROP_TIME = str(get_config_value("crop_list_target_crop_time", "32小时"))
+
+# 从时间文字中心偏移到作物图标中心的坐标。
+CROP_LIST_TIME_TO_ICON_OFFSET = tuple(get_config_value("crop_list_time_to_icon_offset", [0, -65]))
+
+# 作物图标模板匹配阈值。
+CROP_ICON_MATCH_THRESHOLD = float(get_config_value("crop_icon_match_threshold", 0.82))
+
+# 作物图标模板匹配去重横向距离。
+CROP_ICON_MATCH_DEDUP_X = int(get_config_value("crop_icon_match_dedup_x", 30))
+
+# 作物图标模板匹配去重纵向距离。
+CROP_ICON_MATCH_DEDUP_Y = int(get_config_value("crop_icon_match_dedup_y", 30))
+
+# 作物优先级分组；1 组优先辣椒再卷心菜再蓝莓，2 组优先西瓜再柚子再香蕉，3 组优先草莓。
+CROP_ICON_PRIORITY_GROUPS = {
+    int(flag): [str(name) for name in names]
+    for flag, names in get_config_value("crop_icon_priority_groups", {
+        1: ["辣椒", "卷心菜", "蓝莓"],
+        2: ["西瓜", "柚子", "香蕉"],
+        3: ["草莓"],
+    }).items()
+}
+
+# 作物图标模板路径映射。
+CROP_ICON_TEMPLATE_PATHS = {
+    str(name): resolve_project_path(path)
+    for name, path in get_config_value("crop_icon_template_paths", {
+        "辣椒": "resources/templates/crop_icon_chili_core.png",
+        "卷心菜": "resources/templates/crop_icon_cabbage_core.png",
+        "蓝莓": "resources/templates/crop_icon_blueberry_core.png",
+        "西瓜": "resources/templates/crop_icon_watermelon_core.png",
+        "柚子": "resources/templates/crop_icon_grapefruit_core.png",
+        "香蕉": "resources/templates/crop_icon_banana_core.png",
+        "草莓": "resources/templates/crop_icon_strawberry_core.png",
+    }).items()
+}
+
+# 作物列表时间文字模板路径映射。
+CROP_LIST_TIME_TEMPLATE_PATHS = {
+    str(name): resolve_project_path(path)
+    for name, path in get_config_value("crop_list_time_template_paths", {
+        "30秒": "resources/templates/crop_time_30s_text_core.png",
+        "2分钟": "resources/templates/crop_time_2m_text_core.png",
+        "5分钟": "resources/templates/crop_time_5m_text_core.png",
+        "20分钟": "resources/templates/crop_time_20m_text_core.png",
+        "1小时": "resources/templates/crop_time_1h_text_core.png",
+        "8小时": "resources/templates/crop_time_8h_text_core.png",
+        "16小时": "resources/templates/crop_time_16h_text_core.png",
+        "32小时": "resources/templates/crop_time_32h_text_core.png",
+    }).items()
+}
 
 # 农场方向键中心坐标。
 FARM_JOYSTICK_CENTER_POINT = tuple(get_config_value("farm_joystick_center_point", [288, 765]))

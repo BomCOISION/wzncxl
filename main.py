@@ -4,8 +4,10 @@ from config import MAIN_RESTART_MAX_TIMES
 from time import perf_counter
 
 from common.failure_utils import save_failure_screenshot
+from common.extension_runner import run_enabled_extensions
 from common.log_utils import log_error, log_info
 from common.progress_state import get_current_account_from_bottom_index, has_remaining_accounts, reset_progress
+from common.run_context import release_context_devices
 from common.step_runner import StepFailedError, run_step
 from steps.step_0001_关闭并启动游戏 import run as run_step_0001
 from steps.step_0002_等待游戏加载到登录界面 import run as run_step_0002
@@ -56,7 +58,7 @@ def run_account_login_steps() -> None:
     run_step("step_0003 点击退出登录按钮", run_step_0003)
     run_step("step_0004 点击协议同意按钮", run_step_0004)
     run_step("step_0005 点击 QQ 的 iOS 好友玩按钮", run_step_0005)
-    run_step("step_0006 等待王者荣耀权限申请页面", run_step_0006)
+    # run_step("step_0006 等待王者荣耀权限申请页面", run_step_0006)
     run_step("step_0007 点击 QQ 授权切换账号按钮", run_step_0007)
     run_step("step_0008 选择 QQ 账号", run_step_0008)
     run_step("step_0009 点击 QQ 授权同意按钮", run_step_0009)
@@ -81,6 +83,7 @@ def run_server_cycle() -> None:
     run_step("step_0018 清理大厅遮挡", run_step_0018)
     run_step("step_0019 点击来农场干农活按钮", run_step_0019)
     run_step("step_0020 等待农场加载完成", run_step_0020)
+    run_enabled_extensions()
     run_step("step_0021 移动到黄色帽子雕塑", run_step_0021)
     run_step("step_0022 点击一键务农按钮", run_step_0022)
     run_step("step_0023 随机点击收获页面中间", run_step_0023)
@@ -143,4 +146,7 @@ def handle_main_failed(start: float, exc: Exception) -> None:
 
 
 if __name__ == "__main__":
-    run_main_with_restart()
+    try:
+        run_main_with_restart()
+    finally:
+        release_context_devices()

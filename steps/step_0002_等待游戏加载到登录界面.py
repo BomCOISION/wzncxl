@@ -3,6 +3,7 @@ from __future__ import annotations
 from config import (
     GAME_LOAD_TIMEOUT_SECONDS,
     LOGIN_PAGE_REQUIRED_MATCHES,
+    LOGIN_PAGE_TEMPLATE_REGIONS,
     LOGIN_PAGE_TEMPLATE_PATHS,
     RETRY_TIMES,
     SCREENSHOT_MEDIAN_FRAME_COUNT,
@@ -47,4 +48,5 @@ def create_template_config() -> MultiTemplateWaitConfig:
         threshold=TEMPLATE_MATCH_THRESHOLD,
         stable_hits=TEMPLATE_STABLE_HITS,
         interval_seconds=TEMPLATE_MATCH_INTERVAL_SECONDS,
+        template_regions=LOGIN_PAGE_TEMPLATE_REGIONS,
     )

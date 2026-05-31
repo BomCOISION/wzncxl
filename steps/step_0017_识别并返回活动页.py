@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from config import (
     ACTIVITY_BACK_BUTTON_MATCH_THRESHOLD,
+    ACTIVITY_BACK_BUTTON_MATCH_REGION,
     ACTIVITY_BACK_BUTTON_TEMPLATE_PATH,
     ACTIVITY_BACK_BUTTON_WAIT_SECONDS,
     ADB_PATH,
@@ -38,4 +39,9 @@ def back_activity(serial: str) -> bool:
 
 def find_activity_back_point(serial: str) -> tuple[int, int] | None:
     frame = ADBClient(str(ADB_PATH), serial).median_frame(SCREENSHOT_MEDIAN_FRAME_COUNT)
-    return find_template_center(frame, ACTIVITY_BACK_BUTTON_TEMPLATE_PATH, ACTIVITY_BACK_BUTTON_MATCH_THRESHOLD)
+    return find_template_center(
+        frame,
+        ACTIVITY_BACK_BUTTON_TEMPLATE_PATH,
+        ACTIVITY_BACK_BUTTON_MATCH_THRESHOLD,
+        ACTIVITY_BACK_BUTTON_MATCH_REGION,
+    )

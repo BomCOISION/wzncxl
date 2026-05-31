@@ -3,6 +3,7 @@ from __future__ import annotations
 from config import (
     LOBBY_CLEAN_REQUIRED_MATCHES,
     LOBBY_CLEAN_STABLE_HITS,
+    LOBBY_CLEAN_TEMPLATE_REGIONS,
     LOBBY_CLEAN_TEMPLATE_PATHS,
     LOBBY_CLEAN_TIMEOUT_SECONDS,
     SCREENSHOT_MEDIAN_FRAME_COUNT,
@@ -34,4 +35,5 @@ def create_template_config() -> MultiTemplateWaitConfig:
         threshold=TEMPLATE_MATCH_THRESHOLD,
         stable_hits=LOBBY_CLEAN_STABLE_HITS,
         interval_seconds=TEMPLATE_MATCH_INTERVAL_SECONDS,
+        template_regions=LOBBY_CLEAN_TEMPLATE_REGIONS,
     )

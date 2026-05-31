@@ -1,0 +1,15 @@
+{
+  "can_upgrade": true,
+  "score": 0.9773,
+  "threshold": 0.9,
+  "point": [
+    448,
+    76
+  ],
+  "box": [
+    433,
+    60,
+    463,
+    92
+  ]
+}

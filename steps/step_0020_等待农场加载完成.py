@@ -3,6 +3,7 @@ from __future__ import annotations
 from config import (
     FARM_LOADED_REQUIRED_MATCHES,
     FARM_LOADED_STABLE_HITS,
+    FARM_LOADED_TEMPLATE_REGIONS,
     FARM_LOADED_TEMPLATE_PATHS,
     FARM_LOADED_TIMEOUT_SECONDS,
     SCREENSHOT_MEDIAN_FRAME_COUNT,
@@ -30,4 +31,5 @@ def create_template_config() -> MultiTemplateWaitConfig:
         threshold=TEMPLATE_MATCH_THRESHOLD,
         stable_hits=FARM_LOADED_STABLE_HITS,
         interval_seconds=TEMPLATE_MATCH_INTERVAL_SECONDS,
+        template_regions=FARM_LOADED_TEMPLATE_REGIONS,
     )
