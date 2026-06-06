@@ -1,11 +1,6 @@
 from __future__ import annotations
 
 from config import (
-    SELL_WAREHOUSE_AFTER_BATCH_SELL_WAIT_SECONDS,
-    SELL_WAREHOUSE_AFTER_OPEN_WAIT_SECONDS,
-    SELL_WAREHOUSE_AFTER_SELECT_ALL_WAIT_SECONDS,
-    SELL_WAREHOUSE_AFTER_SECOND_SELL_WAIT_SECONDS,
-    SELL_WAREHOUSE_AFTER_SELL_WAIT_SECONDS,
     SELL_WAREHOUSE_BATCH_SELL_BUTTON_POINT,
     SELL_WAREHOUSE_BUTTON_POINT,
     SELL_WAREHOUSE_CLOSE_BUTTON_POINT,
@@ -20,13 +15,13 @@ from common.wait_utils import wait_seconds
 def run() -> None:
     serial = get_context_device()
     tap_warehouse_button(serial)
-    wait_seconds(SELL_WAREHOUSE_AFTER_OPEN_WAIT_SECONDS)
+    wait_seconds(1)
     tap_batch_sell_button(serial)
-    wait_seconds(SELL_WAREHOUSE_AFTER_BATCH_SELL_WAIT_SECONDS)
+    wait_seconds(1)
     tap_select_all(serial)
-    wait_seconds(SELL_WAREHOUSE_AFTER_SELECT_ALL_WAIT_SECONDS)
+    wait_seconds(1)
     tap_confirm_sell_twice(serial)
-    wait_seconds(SELL_WAREHOUSE_AFTER_SECOND_SELL_WAIT_SECONDS)
+    wait_seconds(1)
     tap_close_button(serial)
 
 
@@ -44,7 +39,7 @@ def tap_select_all(serial: str) -> None:
 
 def tap_confirm_sell_twice(serial: str) -> None:
     tap_confirm_sell_button(serial)
-    wait_seconds(SELL_WAREHOUSE_AFTER_SELL_WAIT_SECONDS)
+    wait_seconds(1)
     tap_confirm_sell_button(serial)
 
 

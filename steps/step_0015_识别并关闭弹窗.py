@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from config import (
     ADB_PATH,
-    POPUP_CLOSE_WAIT_SECONDS,
     POPUP_CLOSE_X_MATCH_REGION,
-    POPUP_CLOSE_X_MATCH_THRESHOLD,
     POPUP_CLOSE_X_TEMPLATE_PATH,
-    SCREENSHOT_MEDIAN_FRAME_COUNT,
 )
 from common.adb_client import ADBClient
 from common.log_utils import log_info
@@ -17,7 +14,7 @@ from common.wait_utils import wait_seconds
 
 
 def run() -> None:
-    wait_seconds(POPUP_CLOSE_WAIT_SECONDS)
+    wait_seconds(1)
     close_popup_if_exists(get_context_device())
 
 
@@ -38,10 +35,10 @@ def close_popup(serial: str) -> bool:
 
 
 def find_popup_close_point(serial: str) -> tuple[int, int] | None:
-    frame = ADBClient(str(ADB_PATH), serial).median_frame(SCREENSHOT_MEDIAN_FRAME_COUNT)
+    frame = ADBClient(str(ADB_PATH), serial).median_frame(5)
     return find_template_center(
         frame,
         POPUP_CLOSE_X_TEMPLATE_PATH,
-        POPUP_CLOSE_X_MATCH_THRESHOLD,
+        0.82,
         POPUP_CLOSE_X_MATCH_REGION,
     )

@@ -2,14 +2,8 @@ from __future__ import annotations
 
 from config import (
     PERMISSION_PAGE_LIVE_SCREENSHOT_PATH,
-    PERMISSION_PAGE_REQUIRED_MATCHES,
     PERMISSION_PAGE_TEMPLATE_PATHS,
-    PERMISSION_PAGE_TIMEOUT_SECONDS,
     RETRY_TIMES,
-    SCREENSHOT_MEDIAN_FRAME_COUNT,
-    TEMPLATE_MATCH_INTERVAL_SECONDS,
-    TEMPLATE_MATCH_THRESHOLD,
-    TEMPLATE_STABLE_HITS,
 )
 from common.log_utils import log_info
 from common.run_context import get_context_device
@@ -53,10 +47,10 @@ def wait_for_permission_page(serial: str, attempt: int) -> None:
 def create_template_config() -> MultiTemplateWaitConfig:
     return MultiTemplateWaitConfig(
         template_paths=PERMISSION_PAGE_TEMPLATE_PATHS,
-        required_matches=PERMISSION_PAGE_REQUIRED_MATCHES,
-        timeout_seconds=PERMISSION_PAGE_TIMEOUT_SECONDS,
-        frame_count=SCREENSHOT_MEDIAN_FRAME_COUNT,
-        threshold=TEMPLATE_MATCH_THRESHOLD,
-        stable_hits=TEMPLATE_STABLE_HITS,
-        interval_seconds=TEMPLATE_MATCH_INTERVAL_SECONDS,
+        required_matches=2,
+        timeout_seconds=15,
+        frame_count=5,
+        threshold=0.82,
+        stable_hits=1,
+        interval_seconds=0.8,
     )

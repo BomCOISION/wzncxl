@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 from config import (
-    ACTIVITY_BACK_BUTTON_MATCH_THRESHOLD,
     ACTIVITY_BACK_BUTTON_MATCH_REGION,
     ACTIVITY_BACK_BUTTON_TEMPLATE_PATH,
-    ACTIVITY_BACK_BUTTON_WAIT_SECONDS,
     ADB_PATH,
-    SCREENSHOT_MEDIAN_FRAME_COUNT,
 )
 from common.adb_client import ADBClient
 from common.log_utils import log_info
@@ -17,7 +14,7 @@ from common.wait_utils import wait_seconds
 
 
 def run() -> None:
-    wait_seconds(ACTIVITY_BACK_BUTTON_WAIT_SECONDS)
+    wait_seconds(1)
     back_activity_if_exists(get_context_device())
 
 
@@ -38,10 +35,10 @@ def back_activity(serial: str) -> bool:
 
 
 def find_activity_back_point(serial: str) -> tuple[int, int] | None:
-    frame = ADBClient(str(ADB_PATH), serial).median_frame(SCREENSHOT_MEDIAN_FRAME_COUNT)
+    frame = ADBClient(str(ADB_PATH), serial).median_frame(5)
     return find_template_center(
         frame,
         ACTIVITY_BACK_BUTTON_TEMPLATE_PATH,
-        ACTIVITY_BACK_BUTTON_MATCH_THRESHOLD,
+        0.82,
         ACTIVITY_BACK_BUTTON_MATCH_REGION,
     )

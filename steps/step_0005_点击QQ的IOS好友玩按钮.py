@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from config import QQ_IOS_FRIEND_BUTTON_POINT, QQ_IOS_FRIEND_BUTTON_WAIT_SECONDS
+from config import QQ_IOS_FRIEND_BUTTON_POINT
 from common.run_context import get_context_device
 from common.touch_utils import tap_point
 from common.wait_utils import wait_seconds
 
 
 def run() -> None:
-    wait_seconds(QQ_IOS_FRIEND_BUTTON_WAIT_SECONDS)
+    wait_seconds(1)
     tap_qq_ios_friend_button(get_context_device())
 
 

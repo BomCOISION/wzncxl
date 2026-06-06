@@ -1,13 +1,9 @@
 from __future__ import annotations
 
 from config import (
-    CHANGE_CROP_AFTER_FIRST_CROP_WAIT_SECONDS,
-    CHANGE_CROP_AFTER_TARGET_CROP_WAIT_SECONDS,
-    CHANGE_CROP_DELETE_WAIT_SECONDS,
     CHANGE_CROP_DELETE_X_BUTTON_POINT,
     CHANGE_CROP_FIRST_CROP_POINT,
     CHANGE_CROP_PLANT_BUTTON_POINT,
-    CHANGE_CROP_PLANT_WAIT_SECONDS,
     CHANGE_CROP_SELECT_BUTTON_POINT,
     CROP_LIST_RESULT_PATH,
     CROP_LIST_SCAN_SCREENSHOT_PATH,
@@ -21,15 +17,15 @@ from common.wait_utils import wait_seconds
 
 def run() -> None:
     serial = get_context_device()
-    wait_seconds(CHANGE_CROP_DELETE_WAIT_SECONDS)
+    wait_seconds(1)
     tap_delete_current_crop(serial)
-    wait_seconds(CHANGE_CROP_PLANT_WAIT_SECONDS)
+    wait_seconds(1)
     tap_plant_button(serial)
     wait_seconds(1)
     tap_first_crop(serial)
-    wait_seconds(CHANGE_CROP_AFTER_FIRST_CROP_WAIT_SECONDS)
+    wait_seconds(1)
     tap_target_crop(serial)
-    wait_seconds(CHANGE_CROP_AFTER_TARGET_CROP_WAIT_SECONDS)
+    wait_seconds(1)
     tap_select_button(serial)
 
 
@@ -49,7 +45,7 @@ def tap_first_crop(serial: str) -> None:
 
 
 def tap_target_crop(serial: str) -> None:
-    point = get_priority_crop_icon_by_flag(serial, 1)
+    point = get_priority_crop_icon_by_flag(serial, 2)
     x, y = require_found_point(point, "优先级1农作物")
     tap_point(serial, x, y, "优先级1农作物")
 

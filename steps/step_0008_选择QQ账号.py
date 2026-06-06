@@ -3,7 +3,6 @@ from __future__ import annotations
 from config import (
     QQ_ACCOUNT_COUNT,
     QQ_ACCOUNT_ROW_HEIGHT,
-    QQ_ACCOUNT_SELECT_WAIT_SECONDS,
     QQ_FIRST_ACCOUNT_POINT,
 )
 from common.account_position_utils import calculate_account_point, calculate_index_from_bottom
@@ -14,7 +13,7 @@ from common.wait_utils import wait_seconds
 
 
 def run() -> None:
-    wait_seconds(QQ_ACCOUNT_SELECT_WAIT_SECONDS)
+    wait_seconds(1)
     tap_selected_account(get_context_device())
 
 

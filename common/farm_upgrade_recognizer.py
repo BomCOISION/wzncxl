@@ -9,7 +9,6 @@ import numpy as np
 
 from config import (
     FARM_UPGRADE_ARROW_MATCH_REGION,
-    FARM_UPGRADE_ARROW_MATCH_THRESHOLD,
     FARM_UPGRADE_ARROW_TEMPLATE_PATH,
 )
 
@@ -54,11 +53,11 @@ def create_box(point: list[int], template: np.ndarray) -> list[int]:
 
 
 def create_scan_result(score: float, point: list[int], box: list[int]) -> dict[str, Any]:
-    can_upgrade = score >= FARM_UPGRADE_ARROW_MATCH_THRESHOLD
+    can_upgrade = score >= 0.9
     return {
         "can_upgrade": can_upgrade,
         "score": round(score, 4),
-        "threshold": FARM_UPGRADE_ARROW_MATCH_THRESHOLD,
+        "threshold": 0.9,
         "point": point if can_upgrade else None,
         "box": box if can_upgrade else None,
     }

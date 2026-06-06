@@ -1,15 +1,9 @@
 from __future__ import annotations
 
 from config import (
-    GAME_LOAD_TIMEOUT_SECONDS,
-    LOGIN_PAGE_REQUIRED_MATCHES,
     LOGIN_PAGE_TEMPLATE_REGIONS,
     LOGIN_PAGE_TEMPLATE_PATHS,
     RETRY_TIMES,
-    SCREENSHOT_MEDIAN_FRAME_COUNT,
-    TEMPLATE_MATCH_INTERVAL_SECONDS,
-    TEMPLATE_MATCH_THRESHOLD,
-    TEMPLATE_STABLE_HITS,
 )
 from common.log_utils import log_info
 from common.run_context import get_context_device
@@ -42,11 +36,11 @@ def try_wait_login_page(serial: str, attempt: int) -> Exception | None:
 def create_template_config() -> MultiTemplateWaitConfig:
     return MultiTemplateWaitConfig(
         template_paths=LOGIN_PAGE_TEMPLATE_PATHS,
-        required_matches=LOGIN_PAGE_REQUIRED_MATCHES,
-        timeout_seconds=GAME_LOAD_TIMEOUT_SECONDS,
-        frame_count=SCREENSHOT_MEDIAN_FRAME_COUNT,
-        threshold=TEMPLATE_MATCH_THRESHOLD,
-        stable_hits=TEMPLATE_STABLE_HITS,
-        interval_seconds=TEMPLATE_MATCH_INTERVAL_SECONDS,
+        required_matches=2,
+        timeout_seconds=90,
+        frame_count=5,
+        threshold=0.82,
+        stable_hits=1,
+        interval_seconds=0.8,
         template_regions=LOGIN_PAGE_TEMPLATE_REGIONS,
     )

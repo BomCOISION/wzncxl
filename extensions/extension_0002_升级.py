@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 from config import (
-    FARM_UPGRADE_AFTER_ARROW_WAIT_SECONDS,
     FARM_UPGRADE_ARROW_CLICK_POINT,
     FARM_UPGRADE_BACK_BUTTON_POINT,
     FARM_UPGRADE_BUTTON_POINT,
     FARM_UPGRADE_REPEAT_CLICK_TIMES,
-    FARM_UPGRADE_REPEAT_CLICK_WAIT_SECONDS,
     FARM_UPGRADE_RESULT_PATH,
     FARM_UPGRADE_SCAN_SCREENSHOT_PATH,
 )
@@ -37,7 +35,7 @@ def tap_upgrade_arrow_if_needed(serial: str, result: dict) -> None:
         return
     x, y = require_point(FARM_UPGRADE_ARROW_CLICK_POINT, "农场升级箭头")
     tap_point(serial, x, y, "农场升级箭头")
-    wait_seconds(FARM_UPGRADE_AFTER_ARROW_WAIT_SECONDS)
+    wait_seconds(1)
     tap_upgrade_button(serial)
     repeat_tap_upgrade_button(serial)
     tap_upgrade_back_button(serial)
@@ -50,6 +48,9 @@ def tap_upgrade_button(serial: str) -> None:
 
 def repeat_tap_upgrade_button(serial: str) -> None:
     for _ in range(FARM_UPGRADE_REPEAT_CLICK_TIMES):
+        wait_seconds(4)
+        tap_upgrade_button(serial)
+        tap_upgrade_button(serial)
         wait_seconds(4)
         tap_upgrade_button(serial)
         tap_upgrade_button(serial)

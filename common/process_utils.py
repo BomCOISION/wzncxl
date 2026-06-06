@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import subprocess
 
-from config import ADB_COMMAND_TIMEOUT_SECONDS, ADB_PATH
+from config import ADB_PATH
 from common.log_utils import log_info
 
 
 def run_adb_command(serial: str, args: list[str], check: bool = True) -> str:
     """执行 ADB 命令"""
     command = [str(ADB_PATH), "-s", serial, *args]
-    result = subprocess.run(command, capture_output=True, text=True, timeout=ADB_COMMAND_TIMEOUT_SECONDS)
+    result = subprocess.run(command, capture_output=True, text=True, timeout=30)
     if check and result.returncode:
         raise RuntimeError(format_adb_error(serial, result))
     return result.stdout.strip()
@@ -76,4 +76,3 @@ def start_activity(serial: str, target: str) -> None:
 def start_named_activity(serial: str, target: str) -> None:
     """按 Activity 启动应用"""
     run_adb_command(serial, ["shell", "am", "start", "-n", target])
-

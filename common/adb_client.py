@@ -4,9 +4,6 @@ import subprocess
 import cv2
 import numpy as np
 
-from config import ADB_COMMAND_TIMEOUT_SECONDS
-
-
 class ADBError(RuntimeError):
     pass
 
@@ -55,6 +52,9 @@ class ADBClient:
         args = ["shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), str(ms)]
         self.run(args)
 
+    def motion_event(self, action: str, x: int, y: int) -> None:
+        self.run(["shell", "input", "motionevent", action, str(x), str(y)])
+
     def tap(self, x: int, y: int) -> None:
         self.run(["shell", "input", "tap", str(x), str(y)])
 
@@ -83,9 +83,9 @@ def append_decoded_frame(frames: list[np.ndarray], frame: np.ndarray) -> None:
 
 def run_adb_process(command: list[str], text: bool = False) -> subprocess.CompletedProcess:
     try:
-        return subprocess.run(command, capture_output=True, text=text, timeout=ADB_COMMAND_TIMEOUT_SECONDS)
+        return subprocess.run(command, capture_output=True, text=text, timeout=30)
     except subprocess.TimeoutExpired as exc:
-        raise ADBError(f"ADB 命令超时 {ADB_COMMAND_TIMEOUT_SECONDS} 秒: {format_adb_command(command)}") from exc
+        raise ADBError(f"ADB 命令超时 30 秒: {format_adb_command(command)}") from exc
 
 
 def format_adb_command(command: list[str]) -> str:

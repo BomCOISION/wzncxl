@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from config import ADB_PATH, KING_ACTIVITY, KING_PACKAGE, STARTUP_WAIT_SECONDS
+from config import ADB_PATH, KING_ACTIVITY, KING_PACKAGE
 from common.log_utils import log_info
 from common.process_utils import close_package, get_package_pids, resolve_launch_activity, start_activity
 from common.run_context import get_context_devices
@@ -56,7 +56,7 @@ def start_game(serial: str) -> None:
 
 def wait_for_game_started(serial: str) -> list[str]:
     """等待游戏进程启动"""
-    wait_seconds(STARTUP_WAIT_SECONDS)
+    wait_seconds(15)
     pids = get_package_pids(serial, KING_PACKAGE)
     if not pids:
         raise RuntimeError(f"[{serial}] 游戏启动后未发现进程")

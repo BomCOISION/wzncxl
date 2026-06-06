@@ -4,7 +4,7 @@ from pathlib import Path
 
 import cv2
 
-from config import ADB_PATH, SCREENSHOT_MEDIAN_FRAME_COUNT
+from config import ADB_PATH
 from common.adb_client import ADBClient
 
 
@@ -21,7 +21,7 @@ def save_device_screenshot(serial: str, target_path: Path) -> Path:
 def save_device_median_screenshot(serial: str, target_path: Path) -> Path:
     """保存设备连续截图中位图"""
     target_path.parent.mkdir(parents=True, exist_ok=True)
-    image = ADBClient(str(ADB_PATH), serial).median_frame(SCREENSHOT_MEDIAN_FRAME_COUNT)
+    image = ADBClient(str(ADB_PATH), serial).median_frame(5)
     write_image(target_path, image)
     return target_path
 

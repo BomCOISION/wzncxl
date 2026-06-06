@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from config import BACK_TO_LOBBY_BUTTON_POINT, BACK_TO_LOBBY_BUTTON_WAIT_SECONDS
+from config import BACK_TO_LOBBY_BUTTON_POINT
 from common.run_context import get_context_device
 from common.touch_utils import tap_point
 from common.wait_utils import wait_seconds
 
 
 def run() -> None:
-    wait_seconds(BACK_TO_LOBBY_BUTTON_WAIT_SECONDS)
+    wait_seconds(1)
     tap_back_to_lobby_button(get_context_device())
 
 

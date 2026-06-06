@@ -8,17 +8,11 @@ import cv2
 import numpy as np
 
 from config import (
-    CROP_LIST_MATCH_DEDUP_X,
-    CROP_LIST_MATCH_DEDUP_Y,
     CROP_LIST_MATCH_REGION,
     CROP_LIST_MATCH_RESULT_IMAGE_PATH,
-    CROP_LIST_MATCH_THRESHOLD,
     CROP_LIST_TARGET_CROP_TIME,
     CROP_LIST_TIME_TEMPLATE_PATHS,
     CROP_LIST_TIME_TO_ICON_OFFSET,
-    CROP_ICON_MATCH_DEDUP_X,
-    CROP_ICON_MATCH_DEDUP_Y,
-    CROP_ICON_MATCH_THRESHOLD,
     CROP_ICON_PRIORITY_GROUPS,
     CROP_ICON_TEMPLATE_PATHS,
 )
@@ -81,7 +75,7 @@ def match_crop_icon_template(image: np.ndarray, crop_name: str, template_path: P
 
 def match_crop_icon_points(image: np.ndarray, template: np.ndarray) -> list[tuple[int, int]]:
     result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
-    rows, cols = np.where(result >= CROP_ICON_MATCH_THRESHOLD)
+    rows, cols = np.where(result >= 0.9)
     return dedup_crop_icon_points(to_screen_points(cols, rows, template))
 
 
@@ -98,7 +92,7 @@ def append_unique_crop_icon_point(unique: list[tuple[int, int]], point: tuple[in
 
 
 def is_distinct_crop_icon_point(point: tuple[int, int], old_point: tuple[int, int]) -> bool:
-    return abs(point[0] - old_point[0]) > CROP_ICON_MATCH_DEDUP_X or abs(point[1] - old_point[1]) > CROP_ICON_MATCH_DEDUP_Y
+    return abs(point[0] - old_point[0]) > 30 or abs(point[1] - old_point[1]) > 30
 
 
 def match_time_template(image: np.ndarray, time_name: str, template_path: Path) -> list[dict[str, Any]]:
@@ -135,7 +129,7 @@ def get_match_region() -> tuple[int, int, int, int]:
 
 def match_template_points(image: np.ndarray, template: np.ndarray) -> list[tuple[int, int]]:
     result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
-    rows, cols = np.where(result >= CROP_LIST_MATCH_THRESHOLD)
+    rows, cols = np.where(result >= 0.9)
     return dedup_points(to_screen_points(cols, rows, template))
 
 
@@ -158,7 +152,7 @@ def append_unique_point(unique: list[tuple[int, int]], point: tuple[int, int]) -
 
 
 def is_distinct_point(point: tuple[int, int], old_point: tuple[int, int]) -> bool:
-    return abs(point[0] - old_point[0]) > CROP_LIST_MATCH_DEDUP_X or abs(point[1] - old_point[1]) > CROP_LIST_MATCH_DEDUP_Y
+    return abs(point[0] - old_point[0]) > 20 or abs(point[1] - old_point[1]) > 10
 
 
 def create_item(time_name: str, point: tuple[int, int], template: np.ndarray) -> dict[str, Any]:

@@ -53,6 +53,10 @@ def get_current_server_index() -> int:
     return load_progress().server_index
 
 
+def get_current_server_count() -> int:
+    return load_progress().server_count
+
+
 def has_remaining_accounts() -> bool:
     progress = load_progress()
     return not progress.finished and progress.account_from_bottom_index <= QQ_ACCOUNT_COUNT

@@ -4,11 +4,7 @@ from config import (
     ADB_PATH,
     MY_SERVER_LIST_REGION,
     MY_SERVER_STATUS_TEMPLATE_PATHS,
-    SCREENSHOT_MEDIAN_FRAME_COUNT,
     SERVER_SELECT_POINT_OFFSET,
-    SERVER_SELECT_WAIT_SECONDS,
-    SERVER_STATUS_DEDUP_DISTANCE,
-    SERVER_STATUS_MATCH_THRESHOLD,
 )
 from common.adb_client import ADBClient
 from common.progress_state import get_current_server_index
@@ -19,7 +15,7 @@ from common.wait_utils import wait_seconds
 
 
 def run() -> None:
-    wait_seconds(SERVER_SELECT_WAIT_SECONDS)
+    wait_seconds(1)
     tap_selected_server(get_context_device())
 
 
@@ -34,8 +30,8 @@ def calculate_selected_server_point(serial: str) -> tuple[int, int]:
 
 
 def find_server_points(serial: str) -> list[tuple[int, int]]:
-    frame = ADBClient(str(ADB_PATH), serial).median_frame(SCREENSHOT_MEDIAN_FRAME_COUNT)
-    return find_sorted_server_status_points(frame, MY_SERVER_STATUS_TEMPLATE_PATHS, MY_SERVER_LIST_REGION, SERVER_STATUS_MATCH_THRESHOLD, SERVER_STATUS_DEDUP_DISTANCE)
+    frame = ADBClient(str(ADB_PATH), serial).median_frame(5)
+    return find_sorted_server_status_points(frame, MY_SERVER_STATUS_TEMPLATE_PATHS, MY_SERVER_LIST_REGION, 0.82, 40)
 
 
 def offset_server_point(point: tuple[int, int]) -> tuple[int, int]:

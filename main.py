@@ -6,7 +6,12 @@ from time import perf_counter
 from common.failure_utils import save_failure_screenshot
 from common.extension_runner import run_enabled_extensions
 from common.log_utils import log_error, log_info
-from common.progress_state import get_current_account_from_bottom_index, has_remaining_accounts, reset_progress
+from common.progress_state import (
+    get_current_account_from_bottom_index,
+    get_current_server_index,
+    has_remaining_accounts,
+    reset_progress,
+)
 from common.run_context import release_context_devices
 from common.step_runner import StepFailedError, run_step
 from steps.step_0001_关闭并启动游戏 import run as run_step_0001
@@ -23,12 +28,8 @@ from steps.step_0011_点击换区按钮 import run as run_step_0011
 from steps.step_0012_识别我的服务器数量 import run as run_step_0012
 from steps.step_0013_选择区服 import run as run_step_0013
 from steps.step_0014_点击开始游戏按钮 import run as run_step_0014
-from steps.step_0018_清理大厅遮挡 import run as run_step_0018
 from steps.step_0019_点击来农场干农活按钮 import run as run_step_0019
 from steps.step_0020_等待农场加载完成 import run as run_step_0020
-from steps.step_0021_移动到黄色帽子雕塑 import run as run_step_0021
-from steps.step_0022_点击一键务农按钮 import run as run_step_0022
-from steps.step_0023_随机点击收获页面中间 import run as run_step_0023
 from steps.step_0024_点击农场返回按钮 import run as run_step_0024
 from steps.step_0025_点击返回大厅按钮 import run as run_step_0025
 from steps.step_0026_点击大厅设置按钮 import run as run_step_0026
@@ -50,8 +51,20 @@ def main(start_time: float) -> None:
 
 def run_all_accounts() -> None:
     while has_remaining_accounts():
+        run_account_cycle()
+
+
+def run_account_cycle() -> None:
+    account_index = get_current_account_from_bottom_index()
+    start_time = perf_counter()
+    log_info(f"账号从下往上第 {account_index} 个开始")
+    try:
         run_account_login_steps()
-        run_current_account_servers()
+        run_current_account_servers(account_index)
+    except Exception:
+        log_elapsed_time(f"账号从下往上第 {account_index} 个失败", start_time)
+        raise
+    log_elapsed_time(f"账号从下往上第 {account_index} 个完成", start_time)
 
 
 def run_account_login_steps() -> None:
@@ -65,28 +78,35 @@ def run_account_login_steps() -> None:
     run_step("step_0010 点击 QQ 信息同意按钮", run_step_0010)
 
 
-def run_current_account_servers() -> None:
-    account_index = get_current_account_from_bottom_index()
+def run_current_account_servers(account_index: int) -> None:
     while is_still_current_account(account_index):
-        run_server_cycle()
+        run_server_cycle(account_index)
 
 
 def is_still_current_account(account_index: int) -> bool:
     return has_remaining_accounts() and get_current_account_from_bottom_index() == account_index
 
 
-def run_server_cycle() -> None:
+def run_server_cycle(account_index: int) -> None:
+    server_index = get_current_server_index()
+    start_time = perf_counter()
+    log_info(f"账号从下往上第 {account_index} 个，区服第 {server_index} 个开始")
+    try:
+        run_server_steps()
+    except Exception:
+        log_elapsed_time(f"账号从下往上第 {account_index} 个，区服第 {server_index} 个失败", start_time)
+        raise
+    log_elapsed_time(f"账号从下往上第 {account_index} 个，区服第 {server_index} 个完成", start_time)
+
+
+def run_server_steps() -> None:
     run_step("step_0011 点击换区按钮", run_step_0011)
     run_step("step_0012 识别我的服务器数量", run_step_0012)
     run_step("step_0013 选择区服", run_step_0013)
     run_step("step_0014 点击开始游戏按钮", run_step_0014)
-    run_step("step_0018 清理大厅遮挡", run_step_0018)
     run_step("step_0019 点击来农场干农活按钮", run_step_0019)
     run_step("step_0020 等待农场加载完成", run_step_0020)
     run_enabled_extensions()
-    run_step("step_0021 移动到黄色帽子雕塑", run_step_0021)
-    run_step("step_0022 点击一键务农按钮", run_step_0022)
-    run_step("step_0023 随机点击收获页面中间", run_step_0023)
     run_step("step_0024 点击农场返回按钮", run_step_0024)
     run_step("step_0025 点击返回大厅按钮", run_step_0025)
     run_step("step_0026 点击大厅设置按钮", run_step_0026)
@@ -98,6 +118,10 @@ def run_server_cycle() -> None:
 
 def log_total_time(message: str, start_time: float) -> None:
     log_info(f"{message}，总耗时 {perf_counter() - start_time:.2f} 秒")
+
+
+def log_elapsed_time(message: str, start_time: float) -> None:
+    log_info(f"{message}，耗时 {perf_counter() - start_time:.2f} 秒")
 
 
 def log_step_stop(exc: StepFailedError) -> None:
